@@ -221,7 +221,7 @@ const GROUPS = [
       {lbl:'IBP Snapshots (?)',           type:'pending',  sF:bonusS,  eF:bonusE, note:'? Pending IBP team: M-2 and M-3 fields do not yet exist in Smartmart.'},
       {lbl:'Key user testing / feedback',type:'feedback', sF:0,       eF:uatS,   note:'Continuous feedback loop with key users from April.'},
       {lbl:'Testing & UAT',              type:'uat',      sF:uatS,    eF:uatE,   mEnd:true, mColor:'#3d6fd4', note:'Formal UAT. Starts after dashboard dev, ends 2 weeks after Bonus/Commission.'},
-      {lbl:'Documentation',              type:'doc',      sF:docS,    eF:docE,   slim:true, note:'~2 weeks system documentation in parallel with UAT.'},
+      {lbl:'Documentation',              type:'doc',      sF:docS,    eF:docE,   note:'~2 weeks system documentation in parallel with UAT.'},
       {lbl:'CP/BIO Go-Live',             type:'DIA',      sF:goLive,  color:'#53a318', note:'CP/BIO live immediately after UAT sign-off.'},
     ]
   },
@@ -231,6 +231,7 @@ const GROUPS = [
       {lbl:'Data mapping',          type:'mapping', sF:0,   eF:1,   note:'Running in parallel. Material (50KS normalisation), Customer (zone + ship-to/sold-to).'},
       {lbl:'Dashboard development', type:'seeds',   sF:3,   eF:5.5, note:'DFC reports, Invoice YoY, CR report for commissions, Cereals report.'},
       {lbl:'Testing & UAT',         type:'uat',     sF:5.5, eF:6.5, mEnd:true, mColor:'#1a9e5c', note:'4 weeks UAT with Seeds team. Validation of all reports and CGC data feed.'},
+      {lbl:'Documentation',         type:'doc',     sF:5.5, eF:6.5, note:'System documentation in parallel with UAT.'},
       {lbl:'Seeds Go-Live',         type:'DIA',     sF:6.5, color:'#1a9e5c', note:'Seeds live immediately after UAT.'},
     ]
   },
@@ -241,6 +242,7 @@ const GROUPS = [
       {lbl:'Evaluate global solution', type:'block',   sF:0,   eF:1,   note:'DECISION GATE (in progress): Can the global solution be reused for Italy?'},
       {lbl:'Dashboard development',    type:'veg',     sF:5,   eF:7,   note:'Only if global solution not reusable. Sep–Oct (~2 months).'},
       {lbl:'Testing & UAT',            type:'uat',     sF:7,   eF:8,   mEnd:true, mColor:'#d4820a', note:'4 weeks UAT with VEG commercial team.'},
+      {lbl:'Documentation',            type:'doc',     sF:7,   eF:8,   note:'System documentation in parallel with UAT.'},
       {lbl:'VEG Go-Live',              type:'DIA',     sF:8,   color:'#d4820a', note:'VEG live immediately after UAT.'},
     ]
   },
@@ -251,6 +253,7 @@ const GROUPS = [
       {lbl:'Resolve email automation', type:'block',   sF:2,   eF:3,   note:'BLOCKER: Board sends automated monthly emails. Qlik does not do this natively.'},
       {lbl:'Dashboard development',    type:'hr',      sF:6,   eF:8,   note:'DIM_Employee + FACT_HolidayAccruals. Cost by work level (not actual salary — GDPR). Oct–Nov.'},
       {lbl:'Testing & UAT',            type:'uat',     sF:8,   eF:9,   mEnd:true, mColor:'#7c3aed', note:'4 weeks UAT with HR team and line managers. Nov–Dec.'},
+      {lbl:'Documentation',            type:'doc',     sF:8,   eF:9,   note:'System documentation in parallel with UAT.'},
       {lbl:'HR Go-Live',               type:'DIA',     sF:9,   color:'#7c3aed', note:'HR live immediately after UAT — Dec 2026.'},
     ]
   },
