@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Board Replacement — Qlik Project Plan</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap');
+:root{
+  --bg:#f7f8fa;--bg2:#fff;--bg3:#f0f2f5;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.13);
+  --text:#1a1d2e;--text2:#4a5068;--text3:#9098b1;
+  --syn:#53a318;--syn-dark:#1a3c1a;
+  --lbl:190px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:24px 28px;}
+
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px;}
+.header-left{display:flex;align-items:center;gap:12px;}
+.logo{display:flex;align-items:center;gap:8px;padding:6px 12px;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.logo-name{font-size:14px;font-weight:600;color:var(--syn-dark);}
+.header-title h1{font-size:17px;font-weight:600;letter-spacing:-.3px;}
+.header-title p{color:var(--text2);font-size:12px;margin-top:2px;}
+.chips{display:flex;gap:6px;flex-wrap:wrap;}
+.chip{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;border:1px solid;}
+.cp{background:#eff4ff;color:#3d6fd4;border-color:#c7d9f8;}
+.se{background:#f0faf4;color:#1a9e5c;border-color:#b3e8cc;}
+.vg{background:#fffbeb;color:#d4820a;border-color:#fde68a;}
+.hr{background:#f5f3ff;color:#7c3aed;border-color:#ddd6fe;}
+.dt{background:#f1f5f9;color:#64748b;border-color:#e2e8f0;}
+
+.prog{background:#fff;border:1px solid var(--border);border-radius:12px;padding:13px 16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;}
+.prog-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-weight:500;}
+.pstats{display:flex;gap:20px;}
+.pv{font-size:14px;font-weight:600;}.pl{font-size:10px;color:var(--text3);}
+.track{position:relative;height:9px;background:var(--bg3);border-radius:5px;overflow:visible;margin-bottom:6px;}
+.fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#3d6fd4,#53a318);}
+.now-line{position:absolute;top:-5px;bottom:-5px;width:2px;background:#3d6fd4;border-radius:1px;}
+.now-lbl{position:absolute;top:-20px;transform:translateX(-50%);font-size:9px;color:#3d6fd4;font-family:'DM Mono',monospace;font-weight:500;white-space:nowrap;}
+.mrow{display:flex;justify-content:space-between;font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;}
+
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:16px;}
+.sc{background:#fff;border:1px solid var(--border);border-radius:10px;padding:11px 13px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.sc-l{font-size:10px;color:var(--text3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em;font-weight:500;}
+.sc-v{font-size:16px;font-weight:600;}.sc-s{font-size:10px;color:var(--text3);margin-top:2px;}
+
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;font-size:11px;color:var(--text2);align-items:center;}
+.leg{display:flex;align-items:center;gap:5px;}
+.lsw{width:20px;height:7px;border-radius:3px;}
+.ndot{width:6px;height:6px;border-radius:50%;background:#3d6fd4;}
+
+/* GANTT — fluid width */
+.gantt-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.05);background:#fff;}
+.gantt{width:100%;}
+
+/* header row */
+.g-hdr{display:flex;border-bottom:1.5px solid var(--border2);background:var(--bg3);position:sticky;top:0;z-index:30;}
+.g-hdr-lbl{width:var(--lbl);flex-shrink:0;padding:8px 14px;font-size:10px;font-weight:600;color:var(--text2);border-right:1px solid var(--border);}
+.g-hdr-months{display:flex;flex:1;}
+.g-mon{flex:1;text-align:center;padding:8px 4px;font-size:10px;font-weight:600;font-family:'DM Mono',monospace;color:var(--text3);border-right:1px solid var(--border);letter-spacing:.04em;}
+.g-mon:last-child{border-right:none;}
+.g-mon.now{color:#3d6fd4;}
+.now-pip{display:inline-block;width:5px;height:5px;border-radius:50%;background:#3d6fd4;margin-right:3px;vertical-align:middle;}
+
+/* group header */
+.g-grp{display:flex;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;}
+.g-grp:hover{opacity:.9;}
+.g-grp-lbl{width:var(--lbl);flex-shrink:0;padding:8px 14px;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;border-right:1px solid var(--border);}
+.g-grp-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.g-grp-chev{margin-left:auto;font-size:9px;color:var(--text3);transition:transform .2s;}
+.g-grp-chev.open{transform:rotate(180deg);}
+.g-grp-cells{display:flex;flex:1;}
+.g-grp-cell{flex:1;border-right:1px solid var(--border);}
+.g-grp-cell:last-child{border-right:none;}
+
+/* task row */
+.g-row{display:flex;border-bottom:1px solid var(--border);min-height:32px;}
+.g-row:last-child{border-bottom:none;}
+.g-row:hover{background:#fafbfc;}
+.g-row-lbl{width:var(--lbl);flex-shrink:0;padding:0 14px;font-size:11px;color:var(--text2);border-right:1px solid var(--border);display:flex;align-items:center;line-height:1.4;}
+
+/* bar area */
+.g-area{position:relative;flex:1;display:flex;}
+.g-cell{flex:1;border-right:1px solid var(--border);}
+.g-cell:last-child{border-right:none;}
+.g-cell.nc{background:rgba(61,111,212,.025);}
+
+/* bars */
+.bar{position:absolute;top:50%;transform:translateY(-50%);height:18px;border-radius:4px;
+  display:flex;align-items:center;font-size:9px;font-weight:500;padding:0 6px;
+  white-space:nowrap;overflow:hidden;cursor:default;z-index:5;transition:filter .15s;}
+.bar:hover{filter:brightness(.91);z-index:10;}
+.bar.slim{height:9px;}
+.m-dia{position:absolute;top:50%;transform:translateY(-50%) translateX(-50%);font-size:15px;cursor:default;z-index:8;}
+
+.g-sep{height:7px;background:var(--bg);}
+
+.tip{position:fixed;z-index:999;background:#fff;border:1px solid var(--border2);border-radius:10px;
+  padding:10px 13px;font-size:11px;color:var(--text2);pointer-events:none;opacity:0;
+  transition:opacity .12s;max-width:260px;line-height:1.6;box-shadow:0 8px 24px rgba(0,0,0,.12);}
+.tip.show{opacity:1;}
+.tip strong{color:var(--text);display:block;font-size:12px;margin-bottom:4px;}
+.tip-b{display:inline-block;font-size:9px;padding:1px 6px;border-radius:5px;margin-bottom:4px;font-family:'DM Mono',monospace;font-weight:500;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">
+      <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
+        <path d="M20 4C20 4 8 12 8 22C8 28.627 13.373 34 20 34C26.627 34 32 28.627 32 22C32 12 20 4 20 4Z" fill="#53a318"/>
+        <path d="M20 4C20 4 20 16 26 22C29.314 25.314 32 28 32 22C32 12 20 4 20 4Z" fill="#3d7a12" opacity=".6"/>
+        <path d="M20 22L20 36" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span class="logo-name">syngenta</span>
+    </div>
+    <div class="header-title">
+      <h1>Board Replacement — Qlik Project Plan</h1>
+      <p>Italy · April → December 2026</p>
+    </div>
+  </div>
+  <div class="chips">
+    <span class="chip cp">CP/BIO</span><span class="chip se">Seeds</span>
+    <span class="chip vg">VEG</span><span class="chip hr">HR</span>
+    <span class="chip dt">Go-live: Dec 2026</span>
+  </div>
+</div>
+
+<div class="prog">
+  <div class="prog-top">
+    <div class="prog-lbl">Project timeline — Apr → Dec 2026</div>
+    <div class="pstats">
+      <div><div class="pv" style="color:#3d6fd4">Apr 2026</div><div class="pl">Current month</div></div>
+      <div><div class="pv" style="color:#53a318">~8 mo</div><div class="pl">To go-live</div></div>
+      <div><div class="pv" style="color:#d4820a">~11%</div><div class="pl">Time elapsed</div></div>
+    </div>
+  </div>
+  <div class="track">
+    <div class="fill" style="width:11%"></div>
+    <div class="now-line" style="left:11%"><div class="now-lbl">▼ NOW</div></div>
+  </div>
+  <div class="mrow"><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec ✓</span></div>
+</div>
+
+<div class="summary">
+  <div class="sc"><div class="sc-l">Active now</div><div class="sc-v" style="color:#3d6fd4;font-size:13px">CP/BIO dev</div><div class="sc-s">Net Sales dataset in progress</div></div>
+  <div class="sc"><div class="sc-l">Next milestone</div><div class="sc-v" style="color:#d4820a;font-size:13px">Business review</div><div class="sc-s">May/Jun + key users</div></div>
+  <div class="sc"><div class="sc-l">Blockers</div><div class="sc-v" style="color:#d63b3b">3</div><div class="sc-s">MIO fields · VEG decision · HR email</div></div>
+  <div class="sc"><div class="sc-l">Months to go-live</div><div class="sc-v" style="color:#53a318">~8</div><div class="sc-s">April → December 2026</div></div>
+</div>
+
+<div class="legend">
+  <div class="leg"><div class="lsw" style="background:#f1f5f9;border:1px solid #cbd5e1"></div>Data mapping</div>
+  <div class="leg"><div class="lsw" style="background:#eff4ff;border:1px solid #93bbfd"></div>Planned</div>
+  <div class="leg"><div class="lsw" style="background:#fff1f1;border:1px solid #fca5a5"></div>Blocker</div>
+  <div class="leg"><div class="lsw" style="background:#fffbeb;border:1px dashed #fbbf24"></div>Pending / ?</div>
+  <div class="leg"><div class="lsw" style="background:#f0fdf9;border:1px dashed #6ee7b7"></div>Continuous</div>
+  <div class="leg"><span style="color:#d4820a">◆</span>&nbsp;Milestone</div>
+  <div class="leg"><div class="ndot"></div>&nbsp;Now (Apr 2026)</div>
+</div>
+
+<div class="gantt-wrap"><div class="gantt" id="gantt"></div></div>
+<div class="tip" id="tip"></div>
+
+<script>
+const MONTHS = ['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const N = 9;
+const WPM = 4.33; // weeks per month
+
+// bar styles
+const S = {
+  mapping:  {bg:'#f1f5f9',bd:'#cbd5e1',tc:'#64748b',dash:false},
+  block:    {bg:'#fff1f1',bd:'#fca5a5',tc:'#dc2626',dash:false},
+  pending:  {bg:'#fffbeb',bd:'#fbbf24',tc:'#d97706',dash:true},
+  feedback: {bg:'#f0fdf9',bd:'#6ee7b7',tc:'#059669',dash:true},
+  cpbio:    {bg:'#eff4ff',bd:'#93bbfd',tc:'#2563eb',dash:false},
+  seeds:    {bg:'#f0faf4',bd:'#6ee7b7',tc:'#059669',dash:false},
+  veg:      {bg:'#fffbeb',bd:'#fcd34d',tc:'#b45309',dash:false},
+  hr:       {bg:'#f5f3ff',bd:'#c4b5fd',tc:'#6d28d9',dash:false},
+  uat:      {bg:'#f0fdf4',bd:'#4ade80',tc:'#166534',dash:false},
+  doc:      {bg:'#fdf4ff',bd:'#d8b4fe',tc:'#7c3aed',dash:false},
+  highlight:{bg:'#fff7ed',bd:'#fdba74',tc:'#c2410c',dash:false},
+};
+
+// dataset definitions — sequential from mid-April
+const DS_DEF = [
+  {label:'Net Sales',       weeks:2, bg:'#dbeafe',bd:'#3b82f6',tc:'#1e40af'},
+  {label:'Last Plan',       weeks:4, bg:'#d1fae5',bd:'#10b981',tc:'#064e3b'},
+  {label:'Open Orders',     weeks:1, bg:'#fce7f3',bd:'#ec4899',tc:'#831843'},
+  {label:'Purchase Orders', weeks:2, bg:'#ede9fe',bd:'#8b5cf6',tc:'#3730a3'},
+  {label:'Billing',         weeks:1, bg:'#fef3c7',bd:'#f59e0b',tc:'#78350f'},
+  {label:'Inventory/TCP',   weeks:2, bg:'#ccfbf1',bd:'#14b8a6',tc:'#0f4c44'},
+  {label:'Stock Forecast',  weeks:2, bg:'#fee2e2',bd:'#ef4444',tc:'#7f1d1d'},
+  {label:'Security',        weeks:2, bg:'#e0f2fe',bd:'#0ea5e9',tc:'#0c4a6e'},
+];
+let cur = 0.5;
+const DS = DS_DEF.map(d => {
+  const s = cur, e = cur + d.weeks/WPM;
+  cur = e;
+  return {...d, sF:s, eF:e};
+});
+const devEnd   = cur;                      // ~4.65 ≈ end Aug
+const bonusS   = devEnd;
+const bonusE   = bonusS + 4/WPM;          // 4 weeks
+const uatS     = devEnd;
+const uatE     = bonusE + 2/WPM;          // 2 weeks after bonus
+const docS     = uatS, docE = uatE;
+const goLive   = uatE;                     // immediately after UAT
+
+const GROUPS = [
+  { id:'cpbio', label:'CP / BIO', color:'#3d6fd4', bg:'#eff4ff',
+    tasks:[
+      {lbl:'Data mapping',               type:'mapping',  sF:0,       eF:1,      note:'Material master, Customer master and transactional facts. Running in parallel across all BUs through May.'},
+      {lbl:'Request fields to MIO team', type:'block',    sF:0,       eF:1,      note:'BLOCKER: Channel description (KNVV_KDGRP) and Price List description (KNVV_PLTYP) missing in Smartmart.'},
+      {lbl:'Geographical Hierarchy',     type:'block',    sF:0,       eF:2,      note:'Pending decision: geographical hierarchy still being discussed with business.'},
+      {lbl:'Dashboard development',      type:'MULTI'},
+      {lbl:'Bonus & Commission',         type:'highlight',sF:bonusS,  eF:bonusE, note:'Bonus and Commission module. BIO ODPROV data feed + CP invoice list for fiscal compliance.'},
+      {lbl:'IBP Snapshots (?)',           type:'pending',  sF:bonusS,  eF:bonusE, note:'? Pending IBP team: M-2 and M-3 fields do not yet exist in Smartmart.'},
+      {lbl:'Key user testing / feedback',type:'feedback', sF:0,       eF:uatS,   note:'Continuous feedback loop with key users from April.'},
+      {lbl:'Testing & UAT',              type:'uat',      sF:uatS,    eF:uatE,   mEnd:true, mColor:'#3d6fd4', note:'Formal UAT. Starts after dashboard dev, ends 2 weeks after Bonus/Commission.'},
+      {lbl:'Documentation',              type:'doc',      sF:docS,    eF:docE,   slim:true, note:'~2 weeks system documentation in parallel with UAT.'},
+      {lbl:'CP/BIO Go-Live',             type:'DIA',      sF:goLive,  color:'#53a318', note:'CP/BIO live immediately after UAT sign-off.'},
+    ]
+  },
+  { id:'seeds', label:'Seeds', color:'#1a9e5c', bg:'#f0faf4',
+    // Dashboard Jul–Sep, UAT Sep–Oct (4 weeks), Go-Live Oct
+    tasks:[
+      {lbl:'Data mapping',          type:'mapping', sF:0,   eF:1,   note:'Running in parallel. Material (50KS normalisation), Customer (zone + ship-to/sold-to).'},
+      {lbl:'Dashboard development', type:'seeds',   sF:3,   eF:5.5, note:'DFC reports, Invoice YoY, CR report for commissions, Cereals report.'},
+      {lbl:'Testing & UAT',         type:'uat',     sF:5.5, eF:6.5, mEnd:true, mColor:'#1a9e5c', note:'4 weeks UAT with Seeds team. Validation of all reports and CGC data feed.'},
+      {lbl:'Seeds Go-Live',         type:'DIA',     sF:6.5, color:'#1a9e5c', note:'Seeds live immediately after UAT.'},
+    ]
+  },
+  { id:'veg', label:'VEG', color:'#d4820a', bg:'#fffbeb',
+    // Dashboard Sep–Oct, UAT Oct–Nov (4 weeks), Go-Live Nov
+    tasks:[
+      {lbl:'Data mapping',             type:'mapping', sF:0,   eF:1,   note:'Running in parallel. Material (LSV/SSV separation), Customer.'},
+      {lbl:'Evaluate global solution', type:'block',   sF:0,   eF:1,   note:'DECISION GATE (in progress): Can the global solution be reused for Italy?'},
+      {lbl:'Dashboard development',    type:'veg',     sF:5,   eF:7,   note:'Only if global solution not reusable. Sep–Oct (~2 months).'},
+      {lbl:'Testing & UAT',            type:'uat',     sF:7,   eF:8,   mEnd:true, mColor:'#d4820a', note:'4 weeks UAT with VEG commercial team.'},
+      {lbl:'VEG Go-Live',              type:'DIA',     sF:8,   color:'#d4820a', note:'VEG live immediately after UAT.'},
+    ]
+  },
+  { id:'hr', label:'HR', color:'#7c3aed', bg:'#f5f3ff',
+    // Dashboard Oct–Nov, UAT Nov–Dec (4 weeks), Go-Live Dec
+    tasks:[
+      {lbl:'Data mapping',             type:'mapping', sF:1,   eF:2,   note:'Starts May. Time Attendance + Workday. Confirm if systems are in Smartmart.'},
+      {lbl:'Resolve email automation', type:'block',   sF:2,   eF:3,   note:'BLOCKER: Board sends automated monthly emails. Qlik does not do this natively.'},
+      {lbl:'Dashboard development',    type:'hr',      sF:6,   eF:8,   note:'DIM_Employee + FACT_HolidayAccruals. Cost by work level (not actual salary — GDPR). Oct–Nov.'},
+      {lbl:'Testing & UAT',            type:'uat',     sF:8,   eF:9,   mEnd:true, mColor:'#7c3aed', note:'4 weeks UAT with HR team and line managers. Nov–Dec.'},
+      {lbl:'HR Go-Live',               type:'DIA',     sF:9,   color:'#7c3aed', note:'HR live immediately after UAT — Dec 2026.'},
+    ]
+  },
+];
+
+// ── build ────────────────────────────────────────────────────────
+const gantt = document.getElementById('gantt');
+let COL = 100; // will be recalculated after render
+
+function pct(f) { return (f / N * 100).toFixed(4) + '%'; }
+function wpct(f) { return ((f / N) * 100).toFixed(4) + '%'; }
+
+// Month header
+const ghdr = document.createElement('div');
+ghdr.className = 'g-hdr';
+const glbl0 = document.createElement('div'); glbl0.className = 'g-hdr-lbl'; glbl0.textContent = 'Track';
+ghdr.appendChild(glbl0);
+const gmons = document.createElement('div'); gmons.className = 'g-hdr-months';
+MONTHS.forEach((m,i) => {
+  const mc = document.createElement('div');
+  mc.className = 'g-mon' + (i===0?' now':'');
+  mc.innerHTML = (i===0?'<span class="now-pip"></span>':'') + m;
+  gmons.appendChild(mc);
+});
+ghdr.appendChild(gmons);
+gantt.appendChild(ghdr);
+
+GROUPS.forEach((grp, gi) => {
+  if (gi > 0) { const sep = document.createElement('div'); sep.className='g-sep'; gantt.appendChild(sep); }
+
+  // group header
+  const gh = document.createElement('div');
+  gh.className = 'g-grp'; gh.style.background = grp.bg;
+  const gl = document.createElement('div'); gl.className = 'g-grp-lbl';
+  gl.innerHTML = `<span class="g-grp-dot" style="background:${grp.color}"></span><span style="color:${grp.color}">${grp.label}</span><span class="g-grp-chev open" id="chev-${grp.id}">▲</span>`;
+  gh.appendChild(gl);
+  const gc = document.createElement('div'); gc.className = 'g-grp-cells';
+  MONTHS.forEach((_,i)=>{ const c=document.createElement('div'); c.className='g-grp-cell'+(i===0?' nc':''); gc.appendChild(c); });
+  gh.appendChild(gc); gantt.appendChild(gh);
+
+  const body = document.createElement('div'); body.id=`body-${grp.id}`;
+
+  grp.tasks.forEach(task => {
+    const row = document.createElement('div'); row.className='g-row';
+    const rl = document.createElement('div'); rl.className='g-row-lbl'; rl.textContent=task.lbl;
+    row.appendChild(rl);
+
+    const area = document.createElement('div'); area.className='g-area';
+    MONTHS.forEach((_,i)=>{ const c=document.createElement('div'); c.className='g-cell'+(i===0?' nc':''); area.appendChild(c); });
+
+    if (task.type === 'MULTI') {
+      row.style.minHeight = '36px';
+      DS.forEach(ds => {
+        const bar = document.createElement('div'); bar.className='bar';
+        bar.style.cssText = `left:calc(${pct(ds.sF)} + 2px);width:calc(${wpct(ds.eF-ds.sF)} - 4px);background:${ds.bg};border:1px solid ${ds.bd};color:${ds.tc};height:20px;font-size:8.5px;`;
+        bar.textContent = ds.label;
+        addTip(bar, ds.label, `Dataset: ${ds.label} (${ds.weeks} week${ds.weeks>1?'s':''})`, 'dataset');
+        area.appendChild(bar);
+      });
+
+    } else if (task.type === 'DIA') {
+      const dia = document.createElement('div'); dia.className='m-dia';
+      // centre the diamond at the fractional position
+      dia.style.left = `calc(${pct(task.sF)} + 8px)`;
+      dia.textContent = '◆'; dia.style.color = task.color||'#d4820a';
+      addTip(dia, task.lbl, task.note, 'milestone');
+      area.appendChild(dia);
+
+    } else {
+      const st = S[task.type]||S.cpbio;
+      const bar = document.createElement('div'); bar.className='bar'+(task.slim?' slim':'');
+      bar.style.cssText=`left:calc(${pct(task.sF)} + 2px);width:calc(${wpct(task.eF-task.sF)} - 4px);background:${st.bg};border:1px ${st.dash?'dashed':'solid'} ${st.bd};color:${st.tc};`;
+      if (task.mEnd) {
+        bar.innerHTML=`<span style="flex:1;overflow:hidden;text-overflow:ellipsis;min-width:0">${task.lbl}</span><span style="margin-left:4px;color:${task.mColor};font-size:12px;flex-shrink:0">◆</span>`;
+      } else { bar.textContent = task.lbl; }
+      addTip(bar, task.lbl, task.note, task.type);
+      area.appendChild(bar);
+    }
+
+    row.appendChild(area); body.appendChild(row);
+  });
+
+  gantt.appendChild(body);
+  gh.addEventListener('click', () => {
+    const chev = document.getElementById(`chev-${grp.id}`);
+    const bd = document.getElementById(`body-${grp.id}`);
+    const open = bd.style.display !== 'none';
+    bd.style.display = open?'none':''; chev.classList.toggle('open',!open);
+  });
+});
+
+// tooltip
+const tipEl = document.getElementById('tip');
+const TL={mapping:'Data Mapping',block:'⚠ Blocker',pending:'? Pending',feedback:'↺ Continuous',milestone:'◆ Milestone',highlight:'★ Module',doc:'Documentation',uat:'Testing & UAT',dataset:'Dataset dev',cpbio:'Planned',seeds:'Planned',veg:'Planned',hr:'Planned'};
+const TC={mapping:'#64748b',block:'#dc2626',pending:'#d97706',feedback:'#059669',milestone:'#d4820a',highlight:'#c2410c',doc:'#7c3aed',uat:'#166534',dataset:'#1d4ed8',cpbio:'#2563eb',seeds:'#059669',veg:'#b45309',hr:'#6d28d9'};
+
+function addTip(el,label,note,type){
+  el.addEventListener('mouseenter',e=>{
+    tipEl.innerHTML=`<strong>${label}</strong><span class="tip-b" style="background:#f1f5f9;color:${TC[type]||'#555'}">${TL[type]||type}</span><br>${note}`;
+    tipEl.classList.add('show'); mv(e);
+  });
+  el.addEventListener('mousemove',mv);
+  el.addEventListener('mouseleave',()=>tipEl.classList.remove('show'));
+}
+function mv(e){ tipEl.style.left=Math.min(e.clientX+15,window.innerWidth-270)+'px'; tipEl.style.top=Math.min(e.clientY+15,window.innerHeight-130)+'px'; }
+</script>
+</body>
+</html>
