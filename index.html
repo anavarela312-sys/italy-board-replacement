@@ -40,7 +40,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .now-line{position:absolute;top:-5px;bottom:-5px;width:2px;background:#3d6fd4;border-radius:1px;}
 .now-lbl{position:absolute;top:-20px;transform:translateX(-50%);font-size:9px;color:#3d6fd4;font-family:'DM Mono',monospace;font-weight:500;white-space:nowrap;}
 .mrow{display:flex;justify-content:space-between;font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;}
-
 .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:16px;}
 .sc{background:#fff;border:1px solid var(--border);border-radius:10px;padding:11px 13px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
 .sc-l{font-size:10px;color:var(--text3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em;font-weight:500;}
@@ -148,7 +147,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 <div class="summary">
   <div class="sc"><div class="sc-l">Active now</div><div class="sc-v" style="color:#3d6fd4;font-size:13px">CP/BIO dev</div><div class="sc-s">Net Sales dataset in progress</div></div>
   <div class="sc"><div class="sc-l">Next milestone</div><div class="sc-v" style="color:#d4820a;font-size:13px">Business review</div><div class="sc-s">May/Jun + key users</div></div>
-  <div class="sc"><div class="sc-l">Blockers</div><div class="sc-v" style="color:#d63b3b">3</div><div class="sc-s">MIO fields · VEG decision · HR email</div></div>
+  <div class="sc"><div class="sc-l">Blockers</div><div class="sc-v" style="color:#d63b3b">2</div><div class="sc-s">VEG decision · HR email</div></div>
   <div class="sc"><div class="sc-l">Months to go-live</div><div class="sc-v" style="color:#53a318">~8</div><div class="sc-s">April → December 2026</div></div>
 </div>
 
@@ -185,76 +184,49 @@ const S = {
   highlight:{bg:'#fff7ed',bd:'#fdba74',tc:'#c2410c',dash:false},
 };
 
-// dataset definitions — sequential from mid-April
-const DS_DEF = [
-  {label:'Net Sales',       weeks:2, bg:'#dbeafe',bd:'#3b82f6',tc:'#1e40af'},
-  {label:'Last Plan',       weeks:4, bg:'#d1fae5',bd:'#10b981',tc:'#064e3b'},
-  {label:'Open Orders',     weeks:1, bg:'#fce7f3',bd:'#ec4899',tc:'#831843'},
-  {label:'Purchase Orders', weeks:2, bg:'#ede9fe',bd:'#8b5cf6',tc:'#3730a3'},
-  {label:'Billing',         weeks:1, bg:'#fef3c7',bd:'#f59e0b',tc:'#78350f'},
-  {label:'Inventory/TCP',   weeks:2, bg:'#ccfbf1',bd:'#14b8a6',tc:'#0f4c44'},
-  {label:'Stock Forecast',  weeks:2, bg:'#fee2e2',bd:'#ef4444',tc:'#7f1d1d'},
-  {label:'Security',        weeks:2, bg:'#e0f2fe',bd:'#0ea5e9',tc:'#0c4a6e'},
-];
-let cur = 0.5;
-const DS = DS_DEF.map(d => {
-  const s = cur, e = cur + d.weeks/WPM;
-  cur = e;
-  return {...d, sF:s, eF:e};
-});
-const devEnd   = cur;                      // ~4.65 ≈ end Aug
-const bonusS   = devEnd;
-const bonusE   = bonusS + 4/WPM;          // 4 weeks
-const uatS     = devEnd;
-const uatE     = bonusE + 2/WPM;          // 2 weeks after bonus
-const docS     = uatS, docE = uatE;
-const goLive   = uatE;                     // immediately after UAT
+const p1End = 2.5; // mid-Jun (end of Phase 1 dev)
+const p2End = 7.5; // mid-Nov (end of Phase 2 dev)
+const goLive = 8.5; // December
 
 const GROUPS = [
   { id:'cpbio', label:'CP / BIO', color:'#3d6fd4', bg:'#eff4ff',
     tasks:[
-      {lbl:'Data mapping',               type:'mapping',  sF:0,       eF:1,      note:'Material master, Customer master and transactional facts. Running in parallel across all BUs through May.'},
-      {lbl:'Request fields to MIO team', type:'block',    sF:0,       eF:1,      note:'BLOCKER: Channel description (KNVV_KDGRP) and Price List description (KNVV_PLTYP) missing in Smartmart.'},
-      {lbl:'Geographical Hierarchy',     type:'block',    sF:0,       eF:2,      note:'Pending decision: geographical hierarchy still being discussed with business.'},
-      {lbl:'Dashboard development',      type:'MULTI'},
-      {lbl:'Bonus & Commission',         type:'highlight',sF:bonusS,  eF:bonusE, note:'Bonus and Commission module. BIO ODPROV data feed + CP invoice list for fiscal compliance.'},
-      {lbl:'IBP Snapshots (?)',           type:'pending',  sF:bonusS,  eF:bonusE, note:'? Pending IBP team: M-2 and M-3 fields do not yet exist in Smartmart.'},
-      {lbl:'Key user testing / feedback',type:'feedback', sF:0,       eF:uatS,   note:'Continuous feedback loop with key users from April.'},
-      {lbl:'Testing & UAT',              type:'uat',      sF:uatS,    eF:uatE,   mEnd:true, mColor:'#3d6fd4', note:'Formal UAT. Starts after dashboard dev, ends 2 weeks after Bonus/Commission.'},
-      {lbl:'Documentation',              type:'doc',      sF:docS,    eF:docE,   note:'~2 weeks system documentation in parallel with UAT.'},
-      {lbl:'CP/BIO Go-Live',             type:'DIA',      sF:goLive,  color:'#53a318', note:'CP/BIO live immediately after UAT sign-off.'},
+      {lbl:'Data mapping',                   type:'mapping',   sF:0,         eF:1,         note:'Material master, Customer master and transactional facts. Running in parallel across all BUs through May.'},
+      {lbl:'Request fields to MIO team',     type:'block',     sF:1,         eF:2,         note:'BLOCKER: Channel description (KNVV_KDGRP) and Price List description (KNVV_PLTYP) missing in Smartmart.'},
+      {lbl:'Dashboard dev — Phase 1',        type:'cpbio',     sF:0,         eF:p1End,     note:'Development of dashboards possible with current data. Apr–mid Jun.'},
+      {lbl:'Dashboard dev — Phase 2',        type:'cpbio',     sF:6,         eF:p2End,     note:'Blockers to resolve before starting:\n• Geographical Hierarchy\n• Rebates\n• Bonus & Commission'},
+      {lbl:'Key user testing / feedback',    type:'feedback',  sF:0,         eF:p2End,     note:'Continuous feedback loop with key users across both development phases.'},
+      {lbl:'Testing & UAT — Phase 1',        type:'uat',       sF:p1End,     eF:p1End+1,   note:'Formal UAT for Phase 1. Starts after Phase 1 dashboard dev (mid-Jun), ~4 weeks.'},
+      {lbl:'Testing & UAT — Phase 2',        type:'uat',       sF:p2End,     eF:p2End+1,   mEnd:true, mColor:'#3d6fd4', note:'Formal UAT for Phase 2. Starts after Phase 2 dashboard dev (mid-Nov), ~4 weeks.'},
+      {lbl:'Documentation — Phase 1',        type:'doc',       sF:p1End,     eF:p1End+1,   note:'System documentation in parallel with UAT Phase 1.'},
+      {lbl:'Documentation — Phase 2',        type:'doc',       sF:p2End,     eF:p2End+1,   note:'System documentation in parallel with UAT Phase 2.'},
+      {lbl:'CP/BIO Go-Live',                 type:'DIA',       sF:goLive,    color:'#53a318', note:'CP/BIO live in December after UAT Phase 2 sign-off.'},
     ]
   },
   { id:'seeds', label:'Seeds', color:'#1a9e5c', bg:'#f0faf4',
     // Dashboard Jul–Sep, UAT Sep–Oct (4 weeks), Go-Live Oct
     tasks:[
       {lbl:'Data mapping',          type:'mapping', sF:0,   eF:1,   note:'Running in parallel. Material (50KS normalisation), Customer (zone + ship-to/sold-to).'},
-      {lbl:'Dashboard development', type:'seeds',   sF:3,   eF:5.5, note:'DFC reports, Invoice YoY, CR report for commissions, Cereals report.'},
-      {lbl:'Testing & UAT',         type:'uat',     sF:5.5, eF:6.5, mEnd:true, mColor:'#1a9e5c', note:'4 weeks UAT with Seeds team. Validation of all reports and CGC data feed.'},
-      {lbl:'Documentation',         type:'doc',     sF:5.5, eF:6.5, note:'System documentation in parallel with UAT.'},
-      {lbl:'Seeds Go-Live',         type:'DIA',     sF:6.5, color:'#1a9e5c', note:'Seeds live immediately after UAT.'},
+      {lbl:'Dashboard development', type:'seeds',   sF:1,   eF:4,   note:'DFC reports, Invoice YoY, CR report for commissions, Cereals report. May–end Jul.'},
+      {lbl:'Testing & UAT',         type:'uat',     sF:4,   eF:6,   mEnd:true, mColor:'#1a9e5c', note:'UAT with Seeds team. Validation of all reports and CGC data feed. Aug–Sep.'},
+      {lbl:'Documentation',         type:'doc',     sF:4,   eF:6,   note:'System documentation in parallel with UAT. Aug–Sep.'},
+      {lbl:'Seeds Go-Live',         type:'DIA',     sF:6,   color:'#1a9e5c', note:'Seeds live — start of October.'},
     ]
   },
   { id:'veg', label:'VEG', color:'#d4820a', bg:'#fffbeb',
-    // Dashboard Sep–Oct, UAT Oct–Nov (4 weeks), Go-Live Nov
     tasks:[
-      {lbl:'Data mapping',             type:'mapping', sF:0,   eF:1,   note:'Running in parallel. Material (LSV/SSV separation), Customer.'},
-      {lbl:'Evaluate global solution', type:'block',   sF:0,   eF:1,   note:'DECISION GATE (in progress): Can the global solution be reused for Italy?'},
-      {lbl:'Dashboard development',    type:'veg',     sF:5,   eF:7,   note:'Only if global solution not reusable. Sep–Oct (~2 months).'},
-      {lbl:'Testing & UAT',            type:'uat',     sF:7,   eF:8,   mEnd:true, mColor:'#d4820a', note:'4 weeks UAT with VEG commercial team.'},
-      {lbl:'Documentation',            type:'doc',     sF:7,   eF:8,   note:'System documentation in parallel with UAT.'},
-      {lbl:'VEG Go-Live',              type:'DIA',     sF:8,   color:'#d4820a', note:'VEG live immediately after UAT.'},
+      {lbl:'Adopt global solution',          type:'veg',     sF:0,   eF:1,   note:'Using the global Qlik solution for Italy VEG — no custom development needed.'},
+      {lbl:'VEG Go-Live (global solution)',  type:'DIA',     sF:1,   color:'#d4820a', note:'VEG go-live with global solution — end of April / start of May.'},
+      {lbl:'Budget / Last Plan follow-up',   type:'pending', sF:1,   eF:4,   note:'Budget and Last Plan currently hidden in the global app. Follow-up needed with global team to expose these views for Italy VEG.'},
     ]
   },
   { id:'hr', label:'HR', color:'#7c3aed', bg:'#f5f3ff',
-    // Dashboard Oct–Nov, UAT Nov–Dec (4 weeks), Go-Live Dec
     tasks:[
-      {lbl:'Data mapping',             type:'mapping', sF:1,   eF:2,   note:'Starts May. Time Attendance + Workday. Confirm if systems are in Smartmart.'},
-      {lbl:'Resolve email automation', type:'block',   sF:2,   eF:3,   note:'BLOCKER: Board sends automated monthly emails. Qlik does not do this natively.'},
-      {lbl:'Dashboard development',    type:'hr',      sF:6,   eF:8,   note:'DIM_Employee + FACT_HolidayAccruals. Cost by work level (not actual salary — GDPR). Oct–Nov.'},
-      {lbl:'Testing & UAT',            type:'uat',     sF:8,   eF:9,   mEnd:true, mColor:'#7c3aed', note:'4 weeks UAT with HR team and line managers. Nov–Dec.'},
-      {lbl:'Documentation',            type:'doc',     sF:8,   eF:9,   note:'System documentation in parallel with UAT.'},
-      {lbl:'HR Go-Live',               type:'DIA',     sF:9,   color:'#7c3aed', note:'HR live immediately after UAT — Dec 2026.'},
+      {lbl:'Analysis',              type:'mapping', sF:1,   eF:3,   note:'Receiving HR data info in May. Analysis of Time Attendance + Workday feeds and scope definition.'},
+      {lbl:'Dashboard development', type:'hr',      sF:3,   eF:5,   note:'DIM_Employee + FACT_HolidayAccruals. Cost by work level (not actual salary — GDPR). Jul–Aug.'},
+      {lbl:'Testing & UAT',         type:'uat',     sF:5,   eF:7,   mEnd:true, mColor:'#7c3aed', note:'UAT with HR team and line managers. Sep–Oct.'},
+      {lbl:'Documentation',         type:'doc',     sF:5,   eF:7,   note:'System documentation in parallel with UAT. Sep–Oct.'},
+      {lbl:'HR Go-Live',            type:'DIA',     sF:7,   color:'#7c3aed', note:'HR live — November 2026.'},
     ]
   },
 ];
@@ -304,17 +276,7 @@ GROUPS.forEach((grp, gi) => {
     const area = document.createElement('div'); area.className='g-area';
     MONTHS.forEach((_,i)=>{ const c=document.createElement('div'); c.className='g-cell'+(i===0?' nc':''); area.appendChild(c); });
 
-    if (task.type === 'MULTI') {
-      row.style.minHeight = '36px';
-      DS.forEach(ds => {
-        const bar = document.createElement('div'); bar.className='bar';
-        bar.style.cssText = `left:calc(${pct(ds.sF)} + 2px);width:calc(${wpct(ds.eF-ds.sF)} - 4px);background:${ds.bg};border:1px solid ${ds.bd};color:${ds.tc};height:20px;font-size:8.5px;`;
-        bar.textContent = ds.label;
-        addTip(bar, ds.label, `Dataset: ${ds.label} (${ds.weeks} week${ds.weeks>1?'s':''})`, 'dataset');
-        area.appendChild(bar);
-      });
-
-    } else if (task.type === 'DIA') {
+    if (task.type === 'DIA') {
       const dia = document.createElement('div'); dia.className='m-dia';
       // centre the diamond at the fractional position
       dia.style.left = `calc(${pct(task.sF)} + 8px)`;
