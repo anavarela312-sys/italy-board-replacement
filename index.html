@@ -145,16 +145,15 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 </div>
 
 <div class="summary">
-  <div class="sc"><div class="sc-l">Active now</div><div class="sc-v" style="color:#3d6fd4;font-size:13px">CP/BIO dev</div><div class="sc-s">Net Sales dataset in progress</div></div>
-  <div class="sc"><div class="sc-l">Next milestone</div><div class="sc-v" style="color:#d4820a;font-size:13px">Business review</div><div class="sc-s">May/Jun + key users</div></div>
-  <div class="sc"><div class="sc-l">Blockers</div><div class="sc-v" style="color:#d63b3b">2</div><div class="sc-s">VEG decision · HR email</div></div>
-  <div class="sc"><div class="sc-l">Months to go-live</div><div class="sc-v" style="color:#53a318">~8</div><div class="sc-s">April → December 2026</div></div>
+  <div class="sc"><div class="sc-l">Active now</div><div class="sc-v" style="color:#3d6fd4;font-size:13px">Data Mapping</div><div class="sc-s">All BUs in parallel · Apr</div></div>
+  <div class="sc"><div class="sc-l">Next milestone</div><div class="sc-v" style="color:#d4820a;font-size:13px">UAT Phase 1</div><div class="sc-s">CP/BIO · starts June 2026</div></div>
+  <div class="sc"><div class="sc-l">Freeze period</div><div class="sc-v" style="color:#d97706;font-size:13px">22 May → Oct</div><div class="sc-s">No new scope during freeze</div></div>
+  <div class="sc"><div class="sc-l">Go-live target</div><div class="sc-v" style="color:#53a318">Dec 2026</div><div class="sc-s">CP/BIO · Seeds · HR</div></div>
 </div>
 
 <div class="legend">
   <div class="leg"><div class="lsw" style="background:#f1f5f9;border:1px solid #cbd5e1"></div>Data mapping</div>
   <div class="leg"><div class="lsw" style="background:#eff4ff;border:1px solid #93bbfd"></div>Planned</div>
-  <div class="leg"><div class="lsw" style="background:#fff1f1;border:1px solid #fca5a5"></div>Blocker</div>
   <div class="leg"><div class="lsw" style="background:#fffbeb;border:1px dashed #fbbf24"></div>Pending / ?</div>
   <div class="leg"><div class="lsw" style="background:#f0fdf9;border:1px dashed #6ee7b7"></div>Continuous</div>
   <div class="leg"><span style="color:#d4820a">◆</span>&nbsp;Milestone</div>
@@ -192,9 +191,9 @@ const GROUPS = [
   { id:'cpbio', label:'CP / BIO', color:'#3d6fd4', bg:'#eff4ff',
     tasks:[
       {lbl:'Data mapping',                   type:'mapping',   sF:0,         eF:1,         note:'Material master, Customer master and transactional facts. Running in parallel across all BUs through May.'},
-      {lbl:'Request fields to MIO team',     type:'block',     sF:1.0,       eF:1.2,       slim:true, note:'BLOCKER: Channel description (KNVV_KDGRP) and Price List description (KNVV_PLTYP) missing in Smartmart.'},
+      {lbl:'Request fields to MIO team',     type:'pending',   sF:1.0,       eF:1.2,       slim:true, note:'Request sent to MIO team: Channel description (KNVV_KDGRP) and Price List description (KNVV_PLTYP) — awaiting Smartmart update.'},
       {lbl:'Dashboard dev — Phase 1',        type:'cpbio',     sF:0,         eF:2.0,       note:'Development of dashboards possible with current data. Apr–end May.'},
-      {lbl:'Dashboard dev — Phase 2',        type:'cpbio',     sF:6,         eF:p2End,     note:'Blockers to resolve before starting:\n• Geographical Hierarchy\n• Rebates\n• Bonus & Commission'},
+      {lbl:'Dashboard dev — Phase 2',        type:'cpbio',     sF:6,         eF:p2End,     note:'Dependencies to align before starting:\n• Geographical Hierarchy\n• Rebates\n• Bonus & Commission'},
       {lbl:'Key user testing / feedback',    type:'feedback',  sF:0,         eF:p2End,     note:'Continuous feedback loop with key users across both development phases.'},
       {lbl:'Testing & UAT — Phase 1',        type:'uat',       sF:2.0,       eF:3.5,       note:'Formal UAT for Phase 1. Starts June, ends mid-July.'},
       {lbl:'Testing & UAT — Phase 2',        type:'uat',       sF:p2End,     eF:p2End+1,   mEnd:true, mColor:'#3d6fd4', note:'Formal UAT for Phase 2. Starts after Phase 2 dashboard dev (mid-Nov), ~4 weeks.'},
