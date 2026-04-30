@@ -192,13 +192,13 @@ const GROUPS = [
   { id:'cpbio', label:'CP / BIO', color:'#3d6fd4', bg:'#eff4ff',
     tasks:[
       {lbl:'Data mapping',                   type:'mapping',   sF:0,         eF:1,         note:'Material master, Customer master and transactional facts. Running in parallel across all BUs through May.'},
-      {lbl:'Request fields to MIO team',     type:'block',     sF:1,         eF:2,         note:'BLOCKER: Channel description (KNVV_KDGRP) and Price List description (KNVV_PLTYP) missing in Smartmart.'},
-      {lbl:'Dashboard dev — Phase 1',        type:'cpbio',     sF:0,         eF:p1End,     note:'Development of dashboards possible with current data. Apr–mid Jun.'},
+      {lbl:'Request fields to MIO team',     type:'block',     sF:1.0,       eF:1.2,       slim:true, note:'BLOCKER: Channel description (KNVV_KDGRP) and Price List description (KNVV_PLTYP) missing in Smartmart.'},
+      {lbl:'Dashboard dev — Phase 1',        type:'cpbio',     sF:0,         eF:2.0,       note:'Development of dashboards possible with current data. Apr–end May.'},
       {lbl:'Dashboard dev — Phase 2',        type:'cpbio',     sF:6,         eF:p2End,     note:'Blockers to resolve before starting:\n• Geographical Hierarchy\n• Rebates\n• Bonus & Commission'},
       {lbl:'Key user testing / feedback',    type:'feedback',  sF:0,         eF:p2End,     note:'Continuous feedback loop with key users across both development phases.'},
-      {lbl:'Testing & UAT — Phase 1',        type:'uat',       sF:p1End,     eF:p1End+1,   note:'Formal UAT for Phase 1. Starts after Phase 1 dashboard dev (mid-Jun), ~4 weeks.'},
+      {lbl:'Testing & UAT — Phase 1',        type:'uat',       sF:2.0,       eF:3.5,       note:'Formal UAT for Phase 1. Starts June, ends mid-July.'},
       {lbl:'Testing & UAT — Phase 2',        type:'uat',       sF:p2End,     eF:p2End+1,   mEnd:true, mColor:'#3d6fd4', note:'Formal UAT for Phase 2. Starts after Phase 2 dashboard dev (mid-Nov), ~4 weeks.'},
-      {lbl:'Documentation — Phase 1',        type:'doc',       sF:p1End,     eF:p1End+1,   note:'System documentation in parallel with UAT Phase 1.'},
+      {lbl:'Documentation — Phase 1',        type:'doc',       sF:2.0,       eF:3.5,       note:'System documentation in parallel with UAT Phase 1. Jun–mid Jul.'},
       {lbl:'Documentation — Phase 2',        type:'doc',       sF:p2End,     eF:p2End+1,   note:'System documentation in parallel with UAT Phase 2.'},
       {lbl:'CP/BIO Go-Live',                 type:'DIA',       sF:goLive,    color:'#53a318', note:'CP/BIO live in December after UAT Phase 2 sign-off.'},
     ]
@@ -210,7 +210,8 @@ const GROUPS = [
       {lbl:'Dashboard development', type:'seeds',   sF:1,   eF:4,   note:'DFC reports, Invoice YoY, CR report for commissions, Cereals report. May–end Jul.'},
       {lbl:'Testing & UAT',         type:'uat',     sF:4,   eF:6,   mEnd:true, mColor:'#1a9e5c', note:'UAT with Seeds team. Validation of all reports and CGC data feed. Aug–Sep.'},
       {lbl:'Documentation',         type:'doc',     sF:4,   eF:6,   note:'System documentation in parallel with UAT. Aug–Sep.'},
-      {lbl:'Seeds Go-Live',         type:'DIA',     sF:6,   color:'#1a9e5c', note:'Seeds live — start of October.'},
+      {lbl:'Databricks adjustments',type:'seeds',   sF:7.0, eF:8.0, note:'Databricks pipeline adjustments after UAT. November.'},
+      {lbl:'Seeds Go-Live',         type:'DIA',     sF:8.0, color:'#1a9e5c', note:'Seeds live — end of November.'},
     ]
   },
   { id:'veg', label:'VEG', color:'#d4820a', bg:'#fffbeb',
@@ -226,7 +227,7 @@ const GROUPS = [
       {lbl:'Dashboard development', type:'hr',      sF:3,   eF:5,   note:'DIM_Employee + FACT_HolidayAccruals. Cost by work level (not actual salary — GDPR). Jul–Aug.'},
       {lbl:'Testing & UAT',         type:'uat',     sF:5,   eF:7,   mEnd:true, mColor:'#7c3aed', note:'UAT with HR team and line managers. Sep–Oct.'},
       {lbl:'Documentation',         type:'doc',     sF:5,   eF:7,   note:'System documentation in parallel with UAT. Sep–Oct.'},
-      {lbl:'HR Go-Live',            type:'DIA',     sF:7,   color:'#7c3aed', note:'HR live — November 2026.'},
+      {lbl:'HR Go-Live',            type:'DIA',     sF:8.0, color:'#7c3aed', note:'HR live — November 2026.'},
     ]
   },
 ];
@@ -321,6 +322,43 @@ function addTip(el,label,note,type){
   el.addEventListener('mouseleave',()=>tipEl.classList.remove('show'));
 }
 function mv(e){ tipEl.style.left=Math.min(e.clientX+15,window.innerWidth-270)+'px'; tipEl.style.top=Math.min(e.clientY+15,window.innerHeight-130)+'px'; }
+
+// ── freeze band (22 May → end October) ──────────────────────────
+(function(){
+  const freezeS = 1 + 22/31; // ≈ 1.710  (22 May)
+  const freezeE = 7.0;        // end of October
+  const sL = (freezeS / N * 100).toFixed(4) + '%';
+  const sW = ((freezeE - freezeS) / N * 100).toFixed(4) + '%';
+  const bandCSS = `position:absolute;top:0;bottom:0;left:${sL};width:${sW};background:rgba(251,191,36,0.08);pointer-events:none;z-index:1;`;
+
+  // header months row — show label here
+  const hdrMonths = document.querySelector('.g-hdr-months');
+  if (hdrMonths) {
+    hdrMonths.style.position = 'relative';
+    const hBand = document.createElement('div');
+    hBand.style.cssText = bandCSS + 'display:flex;align-items:center;justify-content:center;';
+    const hLbl = document.createElement('span');
+    hLbl.textContent = 'Freeze period';
+    hLbl.style.cssText = 'font-size:8px;color:rgba(160,80,0,0.50);font-weight:600;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;';
+    hBand.appendChild(hLbl);
+    hdrMonths.appendChild(hBand);
+  }
+
+  // task rows
+  document.querySelectorAll('.g-area').forEach(area => {
+    const band = document.createElement('div');
+    band.style.cssText = bandCSS;
+    area.appendChild(band);
+  });
+
+  // group header rows
+  document.querySelectorAll('.g-grp-cells').forEach(cells => {
+    cells.style.position = 'relative';
+    const band = document.createElement('div');
+    band.style.cssText = bandCSS;
+    cells.appendChild(band);
+  });
+})();
 </script>
 </body>
 </html>
